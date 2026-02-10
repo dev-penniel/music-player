@@ -13,7 +13,7 @@ class extends Component {
 
     use WithFileUploads;
 
-    #[Validate('image|max:10240')] // 1MB Max
+    #[Validate('required|image|max:10240')] // 1MB Max
     public $coverImage;
 
     #[Validate('required|file|mimes:mp3,wav,ogg,m4a|max:10540')] // 10MB Max
@@ -122,6 +122,10 @@ class extends Component {
                 <flux:button variant="primary" type="submit" class="w-full">
                     {{ __('Save') }}
                 </flux:button>
+
+                <x-action-message class="me-3" on="song-uploaded">
+                    {{ __('Upload Successful.') }}
+                </x-action-message>
             </div>
         </div>
     </form>
