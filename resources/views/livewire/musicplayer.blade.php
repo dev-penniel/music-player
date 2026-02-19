@@ -54,521 +54,300 @@ class extends Component {
 ?>
 
 @php
-// Access component variables via get_object_vars($this)
 $data = get_object_vars($this);
 $tracks = $data['tracksForJs'] ?? [];
 $currentId = $data['currentTrackId'] ?? null;
 @endphp
 
-<!-- JSON data for Alpine -->
 <script type="application/json" id="sp_tracks_json">{!! json_encode($tracks) !!}</script>
 
-<div class="">
-  <div class="">
-
-    {{-- resources/views/music/home.blade.php --}}
-
-<div class="min-h-screen bg-gray-900 text-white">
-  <div class="max-w-7xl mx-auto px-4">
-
-    {{-- Top nav --}}
-    <div class="flex bg-gray-900 fixed z-10 p-5  items-center justify-between mb-6 w-full">
-      <div class="flex conteiner items-center gap-4">
-        <div class="text-2xl font-bold">SoundScape</div>
-        <div class="hidden md:block text-gray-400">Discover • Play • Share</div>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <div class="hidden sm:block">
-          <input type="search" placeholder="Search songs, artists, albums"
-                 class="bg-gray-800 rounded-full px-3 py-2 text-sm w-64 focus:outline-none focus:ring-1 focus:ring-gray-600" />
-        </div>
-        <button class="text-xs bg-gray-800 px-3 py-2 rounded hover:bg-gray-700">Sign in</button>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 pt-22">
-
-      {{-- Left sidebar (playlists, quick nav) --}}
-      {{-- Left sidebar (playlists, quick nav) - improved --}}
-<aside class="hidden md:block md:col-span-1">
-  <div class="bg-gray-800 rounded-lg p-3 space-y-3 fixed w-55">
-    <div class="text-xs text-gray-400 uppercase tracking-wider">Your library</div>
-
-    <nav class="space-y-1" aria-label="Primary">
-      <a href="#"
-         class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-700 text-xs text-gray-200 transition active:scale-95"
-         title="Home">
-        <!-- Home icon -->
-        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 4l9 5.75V20a1 1 0 0 1-1 1h-5.25a1 1 0 0 1-1-1v-4.25a1 1 0 0 0-1-1H10.25a1 1 0 0 0-1 1V20a1 1 0 0 1-1 1H3.999A1 1 0 0 1 3 20V9.75z"/>
-        </svg>
-        <span class="truncate">Home</span>
-      </a>
-
-      <a href="#"
-         class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-700 text-xs text-gray-200 transition active:scale-95"
-         title="Browse">
-        <!-- Compass / browse icon -->
-        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364-6.364-2.121 2.121M8.757 15.243l-2.121 2.121m12.728 0-2.121-2.121M8.757 8.757 6.636 6.636"/>
-        </svg>
-        <span class="truncate">Browse</span>
-      </a>
-
-      <a href="#"
-         class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-700 text-xs text-gray-200 transition active:scale-95"
-         title="Radio">
-        <!-- Radio icon -->
-        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5h15a1 1 0 0 0 1-1v-7.5a1 1 0 0 0-1-1h-15a1 1 0 0 0-1 1V18.5a1 1 0 0 0 1 1zM7 8.5V6.5A3.5 3.5 0 0 1 10.5 3h3A3.5 3.5 0 0 1 17 6.5v2"/>
-        </svg>
-        <span class="truncate">Radio</span>
-      </a>
-
-      <a href="#"
-         class="flex items-center gap-3 px-2 py-2 rounded hover:bg-gray-700 text-xs text-gray-200 transition active:scale-95"
-         title="Made for you">
-        <!-- Sparkles / curated -->
-        <svg class="w-4 h-4 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l1.5 3 3 1.5-3 1.5L13.5 12 12 9.75 10.5 12 9 9.75 6 8.25 9 6.75 10.5 3 12 3zM6 18a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
-        </svg>
-        <span class="truncate">Made for you</span>
-      </a>
-    </nav>
-
-    <div class="pt-2 border-t border-gray-700">
-      <div class="text-xs text-gray-400 mb-2 uppercase tracking-wider">Quick playlists</div>
-
-      <div class="space-y-1">
-        <button class="w-full flex items-center gap-3 px-2 py-2 rounded text-xs text-gray-200 hover:bg-gray-700 transition active:scale-95" title="Liked songs">
-          <svg class="w-4 h-4 text-pink-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 21s-7-4.35-9-7.06C1.38 11.93 3 8.5 6 7c2-1.2 3.5-.5 6 2 2.5-2.5 4-3.2 6-2 3 1.5 4.62 4.94 3 6.94C19 16.65 12 21 12 21z"/>
-          </svg>
-          <span class="truncate">Liked Songs</span>
-        </button>
-
-        <button class="w-full flex items-center gap-3 px-2 py-2 rounded text-xs text-gray-200 hover:bg-gray-700 transition active:scale-95" title="Top 50">
-          <svg class="w-4 h-4 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/>
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
-          </svg>
-          <span class="truncate">Top 50</span>
-        </button>
-
-        <button class="w-full flex items-center gap-3 px-2 py-2 rounded text-xs text-gray-200 hover:bg-gray-700 transition active:scale-95" title="Chill playlist">
-          <svg class="w-4 h-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v18m9-9H3"/>
-          </svg>
-          <span class="truncate">Upload your Music</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</aside>
-
-
-      {{-- Main area --}}
-      <main class="md:col-span-4 space-y-6">
-
-        {{-- Hero / Featured --}}
-        {{-- <section class="bg-gradient-to-r from-gray-800 to-gray-700 rounded-lg p-6 flex items-center gap-6">
-          <div class="w-36 h-36 rounded overflow-hidden shadow">
-            <img
-              src="{{ $tracks[0]['cover_path'] ? asset('storage/'.$tracks[0]['cover_path']) : asset('images/default-cover.jpg') }}"
-              alt="{{ $tracks[0]['title'] ?? 'Featured' }}"
-              class="w-full h-full object-cover"
-            />
-          </div>
-          <div class="flex-1">
-            <div class="text-sm text-gray-400">Featured</div>
-            <div class="text-2xl font-semibold mt-1">{{ $tracks[0]['title'] ?? 'Featured Track' }}</div>
-            <div class="text-sm text-gray-400 mt-1">{{ $tracks[0]['artist'] ?? '' }} · {{ $tracks[0]['album'] ?? '' }}</div>
-
-            <div class="mt-4 flex items-center gap-3">
-              <button @click="void(0)" wire:click="setTrack({{ $tracks[0]['id'] ?? 'null' }})" class="bg-white text-gray-900 rounded-full px-4 py-2 font-medium shadow">Play</button>
-              <button @click="void(0)" class="px-3 py-2 rounded bg-gray-800 hover:bg-gray-700 text-sm">Save</button>
-            </div>
-          </div>
-        </section> --}}
-
-        {{-- <section class="relative w-full rounded-lg overflow-hidden h-30 sm:h-62 md:h-50 bg-gray-800">
-          <img
-              src="{{ $tracks[0]['cover_path'] ? asset('storage/'.$tracks[1]['cover_path']) : asset('images/default-cover.jpg') }}"
-              alt="Featured Cover"
-              class="w-full h-full object-cover opacity-100"
-          /> --}}
-
-          {{-- subtle gradient overlay for a polished look --}}
-          {{-- <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent pointer-events-none"></div>
-      </section> --}}
-
-
-        {{-- Curated rows (horizontal scroll) --}}
-        {{-- Helper: we'll derive lists from $tracks using Blade collection helpers --}}
-
-        {{-- New Releases --}}
-        <section>
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">New Releases</h3>
-            <a href="#" class="text-xs text-gray-400">See all</a>
-          </div>
-
-          <div class="flex gap-4 overflow-x-auto pb-2">
-            @foreach (collect($tracks)->take(8) as $track)
-              <div wire:click="setTrack({{ $track['id'] }})" class="w-44 min-w-[11rem]  rounded-lg p-3 hover:bg-gray-800 cursor-pointer">
-                <div class="w-full h-36  rounded overflow-hidden mb-3">
-                  <img src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}" alt="{{ $track['title'] }}" class="w-full h-full object-cover">
-                </div>
-                <div class="text-sm text-center font-medium truncate">{{ $track['title'] }}</div>
-                <div class="text-xs text-center text-gray-400 truncate">{{ $track['artist'] }}</div>
-              </div>
-            @endforeach
-          </div>
-        </section>
-
-        {{-- Recommended for you (random-ish selection) --}}
-        <section>
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">Recommended for you</h3>
-            <a href="#" class="text-xs text-gray-400">Refresh</a>
-          </div>
-
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            @foreach (collect($tracks)->shuffle()->take(8) as $track)
-              <div  wire:click="setTrack({{ $track['id'] }})" class="bg-gray-800 rounded-lg p-3 hover:bg-gray-700 cursor-pointer">
-                <div class="w-full h-50 rounded overflow-hidden mb-3">
-                  <p>{{ $track['id'] }}</p>
-                  <img src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}" alt="{{ $track['title'] }}" class="w-full h-full object-cover">
-                </div>
-                <div class="text-sm font-medium truncate">{{ $track['title'] }}</div>
-                <div class="text-xs text-gray-400 truncate">{{ $track['artist'] }}</div>
-              </div>
-            @endforeach
-          </div>
-        </section>
-
-        {{-- Artists (derived from tracks) --}}
-        <section>
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-lg font-semibold">Artists</h3>
-            <a href="#" class="text-xs text-gray-400">See all</a>
-          </div>
-
-          <div class="flex gap-4 overflow-x-auto pb-2">
-            @foreach (collect($tracks)->pluck('artist')->filter()->unique()->take(10) as $artist)
-              {{-- find first track for this artist to get a cover --}}
-              @php $aTrack = collect($tracks)->first(fn($t) => ($t['artist'] ?? '') === $artist); @endphp
-              <div class="min-w-[10rem] w-40  rounded-lg p-3 hover:bg-gray-800 cursor-pointer">
-                <div class="w-full h-34 rounded-full overflow-hidden mb-3">
-                  <img src="{{ ($aTrack && $aTrack['cover_path']) ? asset('storage/'.$aTrack['cover_path']) : asset('images/default-cover.jpg') }}" alt="{{ $artist }}" class="w-full h-full object-cover">
-                </div>
-                <div class="text-sm text-center font-medium truncate">{{ $artist }}</div>
-                <div class="text-xs text-center text-gray-400 truncate">Artist</div>
-              </div>
-            @endforeach
-          </div>
-        </section>
-
-        {{-- Genres (if present in $tracks as 'genre') --}}
-        @if(collect($tracks)->pluck('genre')->filter()->isNotEmpty())
-          <section>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="text-lg font-semibold">Genres</h3>
-              <a href="#" class="text-xs text-gray-400">Explore</a>
-            </div>
-
-            <div class="flex gap-4 overflow-x-auto pb-2">
-              @foreach (collect($tracks)->pluck('genre')->filter()->unique()->take(8) as $genre)
-                <div class="min-w-[10rem] w-40 bg-gray-800 rounded-lg p-3 hover:bg-gray-700 cursor-pointer">
-                  <div class="w-full h-20 rounded overflow-hidden mb-3 flex items-center justify-center bg-gray-900">
-                    <div class="text-sm font-semibold">{{ ucfirst($genre) }}</div>
-                  </div>
-                  <div class="text-sm font-medium truncate">{{ ucfirst($genre) }}</div>
-                  <div class="text-xs text-gray-400">Genre</div>
-                </div>
-              @endforeach
-            </div>
-          </section>
-        @endif
-
-        {{-- Library (your track list) --}}
-        <section>
-          <div class="flex items-center justify-between mb-10">
-            <h3 class="text-lg font-semibold">Library</h3>
-            <a href="#" class="text-xs text-gray-400">Manage</a>
-          </div>
-
-          <div class="bg-gray-800 rounded-lg p-4">
-            <div class="space-y-3">
-              @foreach ($tracks as $track)
-                <div wire:click="setTrack({{ $track['id'] }})"
-                     class="flex items-center gap-4 p-3 rounded hover:bg-gray-700 cursor-pointer {{ $currentId === $track['id'] ? 'bg-gray-700' : '' }}">
-                  <img src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}" class="w-14 h-14 rounded object-cover">
-                  <div class="flex-1 min-w-0">
-                    <div class="text-sm font-medium truncate">{{ $track['title'] }}</div>
-                    <div class="text-xs text-gray-400 truncate">{{ $track['artist'] }} · {{ $track['album'] }}</div>
-                  </div>
-                  <div class="text-xs text-gray-400">
-                    @php
-                      $m = floor(($track['duration'] ?? 0) / 60);
-                      $s = str_pad(($track['duration'] ?? 0) % 60, 2, '0', STR_PAD_LEFT);
-                    @endphp
-                    {{ $m }}:{{ $s }}
-                  </div>
-                </div>
-              @endforeach
-            </div>
-          </div>
-        </section>
-
-      </main>
-
-    </div> {{-- grid end --}}
-  </div> {{-- container end --}}
-
-</div>
-
-
-    <!-- Now Playing -->
-    {{-- <div class="bg-gray-800 rounded-lg p-4 flex flex-col">
-      <div class="text-sm text-gray-400 mb-2">Now Playing</div>
-
-      <div
-        x-data="playerComponentFromJson('#sp_tracks_json', {{ $currentId ?? 'null' }})"
-        x-init="init()"
-        class="flex-1 flex flex-col"
-      >
-        <div class="flex items-center gap-4">
-          <img :src="currentCover" alt="cover" class="w-28 h-28 rounded object-cover">
-          <div>
-            <div class="text-lg font-semibold" x-text="currentTitle"></div>
-            <div class="text-sm text-gray-400" x-text="currentArtist"></div>
-          </div>
-        </div>
-
-        <!-- Controls -->
-        <div class="mt-6">
-          <div class="flex items-center justify-center gap-6">
-            <button @click="prev()" class="p-2 hover:text-white text-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-              </svg>
-
-
-            </button>
-
-            <button @click="togglePlay()" class="bg-white text-gray-900 rounded-full w-14 h-14 flex items-center justify-center shadow">
-              <template x-if="!isPlaying">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3.868v16.264L19 12 5 3.868z"/></svg>
-              </template>
-              <template x-if="isPlaying">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-              </template>
-            </button>
-
-            <button @click="next()" class="p-2 hover:text-white text-gray-300">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Progress -->
-          <div class="mt-6">
-            <div class="flex items-center gap-2 text-xs text-gray-400">
-              <div x-text="formatTime(currentTime)"></div>
-              <div class="flex-1">
-                <div class="w-full relative h-1 bg-gray-700 rounded" @click="seekTo($event)">
-                  <div :style="`width:${progress}%`" class="h-1 bg-gray-900 rounded"></div>
-                </div>
-              </div>
-              <div x-text="formatTime(duration)"></div>
-            </div>
-          </div>
-
-        
-          <div class="mt-4 flex items-center gap-3">
-            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M5 9v6h4l5 5V4L9 9H5z"/></svg>
-            <input type="range" min="0" max="1" step="0.01" x-model.number="volume" @input="updateVolume()" class="w-full">
-          </div>
-        </div>
-
-        <audio x-ref="audio" class="hidden"></audio>
-      </div>
-    </div> --}}
-  </div>
-
-  <!-- Mini player -->
-  <!-- Mini player (drop-in replacement) -->
 <div
-  class="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 p-2 z-50"
-  x-data="playerComponentFromJson('#sp_tracks_json', {{ $currentId ?? 'null' }})"
-  x-init="init()"
-  x-on:toggle-shuffle.window="(typeof toggleShuffle === 'function') ? toggleShuffle() : (shuffle = !shuffle)"
-  x-on:volume-change.window="(typeof setVolume === 'function') ? setVolume($event.detail) : (volume = $event.detail)"
+    x-data="{
+        headerColor: 'rgb(20,20,20)',
+        extractColor(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            const data = ctx.getImageData(0, 0, 1, 1).data;
+            this.headerColor = `rgb(${data[0]},${data[1]},${data[2]})`;
+        }
+    }"
+    class="min-h-screen text-white transition-colors duration-700"
+    :style="`background: linear-gradient(to bottom, ${headerColor}, #000)`"
 >
-  <div class="max-w-6xl mx-auto flex items-center gap-4">
-    <!-- cover: uses Alpine currentCover, falls back to blade asset if not set -->
-    <img
-      :src="currentCover || '{{ $tracks[0]['cover_path'] ?? asset('images/default-cover.jpg') }}'"
-      alt="cover"
-      class="w-12 h-12 rounded object-cover"
-    />
 
-    <!-- title / artist -->
-    <div class="flex-1 min-w-0">
-      <div class="text-sm mb-1 text-gray-400 font-medium truncate" x-text="currentTitle || '{{ $tracks[0]['title'] ?? '—' }}'"></div>
-      <div class="text-xs text-gray-500 truncate" x-text="currentArtist || '{{ $tracks[0]['artist'] ?? '' }}'"></div>
-    </div>
+{{-- TOP NAV --}}
+<div class="fixed top-0 left-0 right-0 backdrop-blur bg-black/40 z-40 h-20 flex items-center px-6 lg:px-10 border-b border-gray-800">
+    <div class="flex items-center justify-between w-full">
+        <div class="text-2xl font-bold">SoundScape Music</div>
 
-    <!-- play/pause + shuffle + volume + prev/next -->
-    <div class="flex items-center gap-2">
+        <div class="hidden md:block w-96">
+            <input type="search"
+                placeholder="Search..."
+                class="w-full bg-gray-800 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20">
+        </div>
 
-      <!-- shuffle -->
-      <button
-        @click="$dispatch('toggle-shuffle')"
-        :class="(typeof shuffle !== 'undefined' && shuffle) ? 'bg-gray-700 text-white' : 'text-gray-300'"
-        class="p-2 rounded hover:bg-gray-700 hover:text-white active:scale-95 transition-transform"
-        title="Shuffle"
-        aria-pressed="false"
-        x-bind:aria-pressed="(typeof shuffle !== 'undefined' && shuffle) ? 'true' : 'false'"
-      >
-        <!-- simple shuffle icon -->
-        <flux:icon.musical-note />
-      </button>
-
-      <!-- prev (optional) -->
-      <button
-        @click="prev()"
-        class="p-2 hover:text-white text-gray-300 rounded hover:bg-gray-700 active:scale-95 transition-transform"
-        title="Previous"
-        aria-label="Previous track"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-      </button>
-
-      <!-- play/pause -->
-      <button
-        @click="togglePlay()"
-        :title="isPlaying ? 'Pause' : 'Play'"
-        class="bg-white text-gray-900 rounded-full w-12 h-12 flex items-center justify-center shadow active:scale-95 transition-transform"
-        aria-label="Play or pause"
-      >
-        <template x-if="!isPlaying">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3.868v16.264L19 12 5 3.868z"/></svg>
-        </template>
-        <template x-if="isPlaying">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-        </template>
-      </button>
-
-      <!-- next (optional) -->
-      <button
-        @click="next()"
-        class="p-2 hover:text-white text-gray-300 rounded hover:bg-gray-700 active:scale-95 transition-transform"
-        title="Next"
-        aria-label="Next track"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
-
-      <!-- volume (dropdown) -->
-      <div class="relative" x-data="{ openVolume: false, localVol: (typeof volume !== 'undefined' ? volume : 0.8) }" @keydown.escape="openVolume = false" @click.away="openVolume = false">
-        <button
-          @click="openVolume = !openVolume"
-          :class="(typeof volume !== 'undefined' && volume > 0) || (localVol > 0) ? 'text-white' : 'text-gray-400'"
-          class="p-2 rounded hover:bg-gray-700 hover:text-white active:scale-95 transition-transform"
-          title="Volume"
-          aria-haspopup="true"
-          :aria-expanded="openVolume ? 'true' : 'false'"
-        >
-          <!-- heroicons style speaker icon -->
-          <flux:icon.speaker-wave class="size-5" />
-
+        <button class="bg-white text-black px-4 py-2 rounded-full text-sm font-semibold">
+            Sign in
         </button>
+    </div>
+</div>
 
-        <!-- dropdown -->
-        <div
-          x-show="openVolume"
-          x-transition
-          class="absolute right-0 bottom-12 w-44 bg-gray-800 border border-gray-700 rounded p-3 shadow-lg"
-          style="display: none;"
-        >
-          <div class="text-xs text-gray-400 mb-2">Volume</div>
-          <div class="flex items-center gap-2">
-            <!-- small speaker icon -->
-            <flux:icon.speaker-wave />
+<div class="flex pt-20">
 
-            <!-- volume slider -->
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              x-model.number="localVol"
-              @input="$dispatch('volume-change', localVol)"
-              class="w-full accent-white"
-              aria-label="Volume slider"
-            />
-          </div>
+{{-- SIDEBAR --}}
+        <aside class="hidden md:flex md:flex-col w-64 bg-black fixed top-20 left-0 h-[calc(100vh-5rem)] px-6 py-6 space-y-8 border-r border-gray-800">
+            <div>
+                <div class="text-xs text-gray-400 uppercase tracking-widest mb-4">
+                    Your Library
+                </div>
 
-          <div class="mt-2 text-xs text-gray-400">
-            <button
-              @click="localVol = 0; $dispatch('volume-change', 0)"
-              class="text-xs px-2 py-1 rounded hover:bg-gray-700"
-            >Mute</button>
-            <button
-              @click="localVol = 1; $dispatch('volume-change', 1)"
-              class="text-xs px-2 py-1 rounded hover:bg-gray-700"
-            >Max</button>
-          </div>
+                <nav class="space-y-2 text-sm">
+                    <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition">Home</a>
+                    <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition">Browse</a>
+                    <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition">Podcast</a>
+                </nav>
+            </div>
+
+            <div>
+                <div class="text-xs text-gray-400 uppercase tracking-widest mb-4">
+                    Playlists
+                </div>
+
+                <div class="space-y-2 text-sm text-gray-300">
+                    <div class="hover:text-white cursor-pointer">Liked Songs</div>
+                    <div class="hover:text-white cursor-pointer">Saved Songs</div>
+                    <div class="hover:text-white cursor-pointer">Local Top 50</div>
+                    <div class="group relative inline-flex items-center gap-3 px-6 py-2
+                                  bg-gradient-to-r from-emerald-500 to-green-600 
+                                  rounded-full text-white font-semibold 
+                                  cursor-pointer overflow-hidden 
+                                  transition-all duration-300 ease-out 
+                                  hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/30">
+
+                          <!-- Glow Background -->
+                          <span class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition duration-300"></span>
+
+                          <!-- Icon -->
+                          <svg xmlns="http://www.w3.org/2000/svg" 
+                              class="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110"
+                              fill="none" 
+                              viewBox="0 0 24 24" 
+                              stroke="currentColor">
+                              <path stroke-linecap="round" 
+                                    stroke-linejoin="round" 
+                                    stroke-width="2" 
+                                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0l-4 4m4-4l4 4" />
+                          </svg>
+
+                          <!-- Text -->
+                          <span class="relative z-10 tracking-wide">
+                              Upload Music
+                          </span>
+
+                          <!-- Shine Effect -->
+                          <span class="absolute left-[-100%] top-0 h-full w-full 
+                                      bg-gradient-to-r from-transparent via-white/30 to-transparent 
+                                      skew-x-12 transition-all duration-700 
+                                      group-hover:left-[100%]"></span>
+                      </div>
+
+                </div>
+            </div>
+        </aside>
+
+{{-- MAIN --}}
+<main class="flex-1 md:ml-64 px-6 lg:px-10 pb-40 space-y-16">
+
+{{-- NEW RELEASES --}}
+<section>
+    <h3 class="text-2xl font-bold my-8">New Releases</h3>
+
+    <div class="flex gap-6 overflow-x-auto pb-4">
+        @foreach (collect($tracks)->take(8) as $track)
+            <div wire:click="setTrack({{ $track['id'] }})"
+                class="w-44 min-w-[11rem] bg-gray-900 rounded-xl p-4 hover:bg-gray-800 transition-all duration-300 group cursor-pointer relative">
+
+                <div class="relative">
+                    <img
+                        x-on:load="extractColor($el)"
+                        src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}"
+                        class="w-full h-40 object-cover rounded-xl shadow-lg group-hover:scale-105 transition duration-500">
+
+                    {{-- Floating Play Button --}}
+                    <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-4 transition-all duration-300">
+                        <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                              <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="text-sm font-semibold truncate">{{ $track['title'] }}</div>
+                    <div class="text-xs text-gray-400 truncate">{{ $track['artist'] }}</div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</section>
+
+{{-- RECOMMENDED --}}
+<section>
+    <h3 class="text-2xl font-bold mb-8">Recommended for you</h3>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+        @foreach (collect($tracks)->shuffle()->take(10) as $track)
+            <div wire:click="setTrack({{ $track['id'] }})"
+                class="bg-gray-900 rounded-xl p-4 hover:bg-gray-800 transition duration-300 group cursor-pointer relative">
+
+                <div class="relative">
+                    <img
+                        x-on:load="extractColor($el)"
+                        src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}"
+                        class="w-full h-44 object-cover rounded-xl shadow-lg group-hover:scale-105 transition duration-500">
+
+                    <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-4 transition-all duration-300">
+                        <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+                              <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <div class="text-sm font-semibold truncate">{{ $track['title'] }}</div>
+                    <div class="text-xs text-gray-400 truncate">{{ $track['artist'] }}</div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+</section>
+
+{{-- Artists (derived from tracks) --}} 
+<section> 
+  <div class="flex items-center justify-between mb-3"> 
+    <h3 class="text-lg font-semibold">Artists</h3> 
+    <a href="#" class="text-xs text-gray-400">See all</a> 
+  </div> 
+  <div class="flex gap-4 overflow-x-auto pb-2"> @foreach (collect($tracks)->pluck('artist')->filter()->unique()->take(10) as $artist) {{-- find first track for this artist to get a cover --}} @php $aTrack = collect($tracks)->first(fn($t) => ($t['artist'] ?? '') === $artist); @endphp 
+    <div class="min-w-[10rem] w-40 rounded-lg p-3 hover:bg-gray-800 cursor-pointer"> 
+      <div class="w-full h-34 rounded-full overflow-hidden mb-3"> 
+        <img src="{{ ($aTrack && $aTrack['cover_path']) ? asset('storage/'.$aTrack['cover_path']) : asset('images/default-cover.jpg') }}" alt="{{ $artist }}" class="w-full h-full object-cover"> 
+      </div> 
+      <div class="text-sm text-center font-medium truncate">{{ $artist }}</div>
+      <div class="text-xs text-center text-gray-400 truncate">Artist</div> 
+    </div> @endforeach </div> 
+  </section> {{-- Genres (if present in $tracks as 'genre') --}} @if(collect($tracks)->pluck('genre')->filter()->isNotEmpty()) 
+  <section> 
+    <div class="flex items-center justify-between mb-3"> 
+      <h3 class="text-lg font-semibold">Genres</h3> 
+      <a href="#" class="text-xs text-gray-400">Explore</a> 
+    </div> 
+    <div class="flex gap-4 overflow-x-auto pb-2"> @foreach (collect($tracks)->pluck('genre')->filter()->unique()->take(8) as $genre) 
+      <div class="min-w-[10rem] w-40 bg-gray-800 rounded-lg p-3 hover:bg-gray-700 cursor-pointer"> <div class="w-full h-20 rounded overflow-hidden mb-3 flex items-center justify-center bg-gray-900"> 
+        <div class="text-sm font-semibold">{{ ucfirst($genre) }}</div> 
+      </div> <div class="text-sm font-medium truncate">{{ ucfirst($genre) }}</div> 
+      <div class="text-xs text-gray-400">Genre</div> 
+    </div> @endforeach 
+  </div> 
+</section> @endif
+
+</main>
+</div>
+
+{{-- MINI PLAYER --}}
+<div
+    class="fixed bottom-16 md:bottom-0 left-0 right-0 bg-black border-t border-gray-800 h-24 px-6 flex items-center z-50"
+    x-data="playerComponentFromJson('#sp_tracks_json', {{ $currentId ?? 'null' }})"
+    x-init="init()"
+>
+
+    <div class="w-full flex items-center justify-between">
+
+        <div class="flex items-center gap-4 w-1/3">
+            <img :src="currentCover" class="w-14 h-14 rounded-lg object-cover">
+            <div>
+                <div class="text-sm font-medium truncate" x-text="currentTitle"></div>
+                <div class="text-xs text-gray-400 truncate" x-text="currentArtist"></div>
+            </div>
         </div>
-      </div>
+
+        <div class="flex flex-col items-center w-1/3">
+            <div class="flex items-center gap-6 mb-2">
+                <button @click="prev()" class="text-gray-400 hover:text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                    <path fill-rule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+
+                <button @click="togglePlay()"
+                    class="bg-white text-black rounded-full w-10 h-10 flex items-center justify-center">
+                    <span x-show="!isPlaying">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path d="M6.3 2.84A1.5 1.5 0 0 0 4 4.11v11.78a1.5 1.5 0 0 0 2.3 1.27l9.344-5.891a1.5 1.5 0 0 0 0-2.538L6.3 2.841Z" />
+                      </svg>
+                    </span>
+                    <span x-show="isPlaying">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path d="M5.75 3a.75.75 0 0 0-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 0 0 .75-.75V3.75A.75.75 0 0 0 7.25 3h-1.5ZM12.75 3a.75.75 0 0 0-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 0 0 .75-.75V3.75a.75.75 0 0 0-.75-.75h-1.5Z" />
+                      </svg>
+                    </span>
+                </button>
+
+                <button @click="next()" class="text-gray-400 hover:text-white">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                    <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                  </svg>
+                </button>
+            </div>
+
+            <div class="w-full flex items-center gap-2 text-xs text-gray-400">
+                <div x-text="formatTime(currentTime)"></div>
+                <div class="flex-1">
+                    <div class="w-full h-1 bg-gray-700 rounded cursor-pointer" @click="seekTo($event)">
+                        <div :style="`width:${progress}%`" class="h-1 bg-white rounded"></div>
+                    </div>
+                </div>
+                <div x-text="formatTime(duration)"></div>
+            </div>
+        </div>
+
+        <div class="w-1/3 flex justify-end">
+            <input type="range" min="0" max="1" step="0.01"
+                x-model.number="volume"
+                @input="updateVolume()"
+                class="w-32">
+        </div>
 
     </div>
-  </div>
 
-  <!-- optional small progress bar under the player -->
-  <div class="max-w-6xl mx-auto mt-2 px-2">
-    <div class="flex items-center gap-2 text-xs text-gray-400">
-      <div x-text="formatTime(currentTime)"></div>
-      <div class="flex-1">
-        <div class="w-full relative h-1 bg-gray-700 rounded cursor-pointer" @click="seekTo($event)">
-          <div :style="`width:${progress}%`" class="h-1 bg-gray-900 rounded"></div>
-        </div>
-      </div>
-      <div x-text="formatTime(duration)"></div>
+    <audio x-ref="audio" class="hidden"></audio>
+</div>
+
+{{-- MOBILE BOTTOM NAV --}}
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 h-16 flex items-center justify-around text-xs z-40">
+    <div class="flex flex-col items-center">
+        🏠
+        <span>Home</span>
     </div>
-  </div>
+    <div class="flex flex-col items-center">
+        🔍
+        <span>Search</span>
+    </div>
+    <div class="flex flex-col items-center">
+        📚
+        <span>Library</span>
+    </div>
+</div>
 
-  <!-- keep the audio element reference inside this component so the component can control it -->
-  <audio x-ref="audio" class="hidden"></audio>
 </div>
 
 
-  <!-- optional small progress bar under the player -->
-  <div class="max-w-6xl mx-auto mb-20 mt-2 px-2">
-    <div class="flex items-center gap-2 text-xs text-gray-400">
-      <div x-text="formatTime(currentTime)"></div>
-      <div class="flex-1">
-        <div class="w-full relative h-1 bg-gray-700 rounded cursor-pointer" @click="seekTo($event)">
-          <div :style="`width:${progress}%`" class="h-1 bg-gray-900 rounded"></div>
-        </div>
-      </div>
-      <div x-text="formatTime(duration)"></div>
-    </div>
-  </div>
-
-  <!-- keep the audio element reference inside this component so the component can control it -->
-  <audio x-ref="audio" class="hidden"></audio>
-</div>
-
-</div>
 
 <script>
 function playerComponentFromJson(jsonSelector, currentId) {
