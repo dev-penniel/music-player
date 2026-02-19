@@ -42,12 +42,10 @@ class extends Component {
 
     public function setTrack(int $id): void
     {
-
-      dd('hello');
-
         $this->currentTrackId = $id;
         $this->currentIdForJs = $id;
-        $this->emit('trackChanged', $id);
+
+        $this->dispatch('trackChanged', id: $id);
     }
 
 };
@@ -81,7 +79,7 @@ $currentId = $data['currentTrackId'] ?? null;
 {{-- TOP NAV --}}
 <div class="fixed top-0 left-0 right-0 backdrop-blur bg-black/40 z-40 h-20 flex items-center px-6 lg:px-10 border-b border-gray-800">
     <div class="flex items-center justify-between w-full">
-        <div class="text-2xl font-bold">SoundScape Music</div>
+        <div class="text-2xl font-bold">MusicPlayer</div>
 
         <div class="hidden md:block w-96">
             <input type="search"
@@ -98,65 +96,112 @@ $currentId = $data['currentTrackId'] ?? null;
 <div class="flex pt-20">
 
 {{-- SIDEBAR --}}
-        <aside class="hidden md:flex md:flex-col w-64 bg-black fixed top-20 left-0 h-[calc(100vh-5rem)] px-6 py-6 space-y-8 border-r border-gray-800">
-            <div>
-                <div class="text-xs text-gray-400 uppercase tracking-widest mb-4">
-                    Your Library
-                </div>
+<aside class="hidden md:flex md:flex-col w-64 bg-black fixed top-20 left-0 h-[calc(100vh-5rem)] px-6 py-6 space-y-8 border-r border-gray-800">
 
-                <nav class="space-y-2 text-sm">
-                    <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition">Home</a>
-                    <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition">Browse</a>
-                    <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-800 transition">Podcast</a>
-                </nav>
+    {{-- Your Library --}}
+    <div>
+        <div class="text-xs text-gray-400 uppercase tracking-widest mb-4">
+            Your Library
+        </div>
+
+        <nav class="space-y-2 text-sm">
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                  <path fill-rule="evenodd" d="M9.293 2.293a1 1 0 0 1 1.414 0l7 7A1 1 0 0 1 17 11h-1v6a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6H3a1 1 0 0 1-.707-1.707l7-7Z" clip-rule="evenodd" />
+                </svg>
+                Home
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                  <path fill-rule="evenodd" d="M13.5 4.938a7 7 0 1 1-9.006 1.737c.202-.257.59-.218.793.039.278.352.594.672.943.954.332.269.786-.049.773-.476a5.977 5.977 0 0 1 .572-2.759 6.026 6.026 0 0 1 2.486-2.665c.247-.14.55-.016.677.238A6.967 6.967 0 0 0 13.5 4.938ZM14 12a4 4 0 0 1-4 4c-1.913 0-3.52-1.398-3.91-3.182-.093-.429.44-.643.814-.413a4.043 4.043 0 0 0 1.601.564c.303.038.531-.24.51-.544a5.975 5.975 0 0 1 1.315-4.192.447.447 0 0 1 .431-.16A4.001 4.001 0 0 1 14 12Z" clip-rule="evenodd" />
+                </svg>
+
+                Explore
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-800 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                  <path d="M7 4a3 3 0 0 1 6 0v6a3 3 0 1 1-6 0V4Z" />
+                  <path d="M5.5 9.643a.75.75 0 0 0-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-1.5v-1.546A6.001 6.001 0 0 0 16 10v-.357a.75.75 0 0 0-1.5 0V10a4.5 4.5 0 0 1-9 0v-.357Z" />
+                </svg>
+                Podcast
+            </a>
+        </nav>
+    </div>
+
+    {{-- Playlists --}}
+    <div>
+        <div class="text-xs text-gray-400 uppercase tracking-widest mb-4">
+            Playlists
+        </div>
+
+        <div class="space-y-2 text-sm text-gray-300">
+            <div class="flex items-center gap-2 hover:text-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-gray-400 group-hover:text-white">
+                  <path d="M7 4a3 3 0 0 1 6 0v6a3 3 0 1 1-6 0V4Z" />
+                  <path d="M5.5 9.643a.75.75 0 0 0-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-1.5v-1.546A6.001 6.001 0 0 0 16 10v-.357a.75.75 0 0 0-1.5 0V10a4.5 4.5 0 0 1-9 0v-.357Z" />
+                </svg>
+
+                Liked Songs
             </div>
 
-            <div>
-                <div class="text-xs text-gray-400 uppercase tracking-widest mb-4">
-                    Playlists
-                </div>
+            <div class="flex items-center gap-2 hover:text-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-gray-400 group-hover:text-white">
+                  <path fill-rule="evenodd" d="M10 2c-1.716 0-3.408.106-5.07.31C3.806 2.45 3 3.414 3 4.517V17.25a.75.75 0 0 0 1.075.676L10 15.082l5.925 2.844A.75.75 0 0 0 17 17.25V4.517c0-1.103-.806-2.068-1.93-2.207A41.403 41.403 0 0 0 10 2Z" clip-rule="evenodd" />
+                </svg>
 
-                <div class="space-y-2 text-sm text-gray-300">
-                    <div class="hover:text-white cursor-pointer">Liked Songs</div>
-                    <div class="hover:text-white cursor-pointer">Saved Songs</div>
-                    <div class="hover:text-white cursor-pointer">Local Top 50</div>
-                    <div class="group relative inline-flex items-center gap-3 px-6 py-2
-                                  bg-gradient-to-r from-emerald-500 to-green-600 
-                                  rounded-full text-white font-semibold 
-                                  cursor-pointer overflow-hidden 
-                                  transition-all duration-300 ease-out 
-                                  hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/30">
 
-                          <!-- Glow Background -->
-                          <span class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition duration-300"></span>
-
-                          <!-- Icon -->
-                          <svg xmlns="http://www.w3.org/2000/svg" 
-                              class="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110"
-                              fill="none" 
-                              viewBox="0 0 24 24" 
-                              stroke="currentColor">
-                              <path stroke-linecap="round" 
-                                    stroke-linejoin="round" 
-                                    stroke-width="2" 
-                                    d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0l-4 4m4-4l4 4" />
-                          </svg>
-
-                          <!-- Text -->
-                          <span class="relative z-10 tracking-wide">
-                              Upload Music
-                          </span>
-
-                          <!-- Shine Effect -->
-                          <span class="absolute left-[-100%] top-0 h-full w-full 
-                                      bg-gradient-to-r from-transparent via-white/30 to-transparent 
-                                      skew-x-12 transition-all duration-700 
-                                      group-hover:left-[100%]"></span>
-                      </div>
-
-                </div>
+                Saved Songs
             </div>
-        </aside>
+
+            <div class="flex items-center gap-2 hover:text-white cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-gray-400 group-hover:text-white">
+                  <path fill-rule="evenodd" d="M17.721 1.599a.75.75 0 0 1 .279.583v11.29a2.25 2.25 0 0 1-1.774 2.2l-2.041.44a2.216 2.216 0 0 1-.938-4.332l2.662-.577a.75.75 0 0 0 .591-.733V6.112l-8 1.73v7.684a2.25 2.25 0 0 1-1.774 2.2l-2.042.44a2.216 2.216 0 1 1-.935-4.331l2.659-.573A.75.75 0 0 0 7 12.529V4.236a.75.75 0 0 1 .591-.733l9.5-2.054a.75.75 0 0 1 .63.15Z" clip-rule="evenodd" />
+                </svg>
+
+                Local Top 50
+            </div>
+
+            {{-- Upload Music Button (keep as is) --}}
+            <div class="group relative inline-flex items-center gap-3 px-6 py-2
+                          bg-gradient-to-r from-emerald-500 to-green-600 
+                          rounded-full text-white font-semibold 
+                          cursor-pointer overflow-hidden 
+                          transition-all duration-300 ease-out 
+                          hover:scale-105 hover:shadow-2xl hover:shadow-emerald-500/30">
+
+                  <!-- Glow Background -->
+                  <span class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition duration-300"></span>
+
+                  <!-- Icon -->
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                      class="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110"
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor">
+                      <path stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M12 12V4m0 0l-4 4m4-4l4 4" />
+                  </svg>
+
+                  <!-- Text -->
+                  <span class="relative z-10 tracking-wide">
+                      Upload Music
+                  </span>
+
+                  <!-- Shine Effect -->
+                  <span class="absolute left-[-100%] top-0 h-full w-full 
+                              bg-gradient-to-r from-transparent via-white/30 to-transparent 
+                              skew-x-12 transition-all duration-700 
+                              group-hover:left-[100%]"></span>
+              </div>
+        </div>
+    </div>
+
+</aside>
+
 
 {{-- MAIN --}}
 <main class="flex-1 md:ml-64 px-6 lg:px-10 pb-40 space-y-16">
@@ -165,25 +210,53 @@ $currentId = $data['currentTrackId'] ?? null;
 <section>
     <h3 class="text-2xl font-bold my-8">New Releases</h3>
 
-    <div class="flex gap-6 overflow-x-auto pb-4">
-        @foreach (collect($tracks)->take(8) as $track)
-            <div wire:click="setTrack({{ $track['id'] }})"
-                class="w-44 min-w-[11rem] bg-gray-900 rounded-xl p-4 hover:bg-gray-800 transition-all duration-300 group cursor-pointer relative">
+    <div class="flex flex-wrap gap-6 overflow-x-auto pb-4">
+        @foreach (collect($tracks)->take(6) as $track)
+            <div
+                class="bg-gray-900 rounded-xl p-4 hover:bg-gray-800 transition-all duration-300 group cursor-pointer relative">
 
-                <div class="relative">
+                <div class="relative w-40 h-40">
                     <img
                         x-on:load="extractColor($el)"
                         src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}"
-                        class="w-full h-40 object-cover rounded-xl shadow-lg group-hover:scale-105 transition duration-500">
+                        class="w-40 h-40 object-cover rounded-xl shadow-lg group-hover:scale-105 transition duration-500">
 
                     {{-- Floating Play Button --}}
-                    <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-4 transition-all duration-300">
-                        <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
-                              <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
-                            </svg>
-                        </div>
-                    </div>
+<div class="absolute bottom-3 right-3 opacity-0 
+            group-hover:opacity-100 
+            group-hover:translate-y-0 
+            translate-y-4 transition-all duration-300">
+
+    <div
+        wire:click.stop="setTrack({{ $track['id'] }})"
+        class="w-11 h-11 rounded-full flex items-center 
+               justify-center shadow-xl transition-all duration-300 cursor-pointer
+               
+               {{ $currentTrackId == $track['id'] && $isPlaying 
+                    ? 'bg-green-400 scale-110 shadow-green-500/40 shadow-2xl' 
+                    : 'bg-green-500 hover:bg-green-400 hover:scale-110' }}">
+
+        {{-- PLAY ICON --}}
+        @if($currentTrackId != $track['id'] || !$isPlaying)
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 viewBox="0 0 16 16" 
+                 fill="currentColor" 
+                 class="w-4 h-4 text-black">
+                <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
+            </svg>
+        @else
+        {{-- PAUSE ICON --}}
+            <svg xmlns="http://www.w3.org/2000/svg" 
+                 viewBox="0 0 16 16" 
+                 fill="currentColor" 
+                 class="w-4 h-4 text-black">
+                <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5Zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5Z" />
+            </svg>
+        @endif
+
+    </div>
+</div>
+
                 </div>
 
                 <div class="mt-4">
@@ -208,7 +281,7 @@ $currentId = $data['currentTrackId'] ?? null;
                     <img
                         x-on:load="extractColor($el)"
                         src="{{ $track['cover_path'] ? asset('storage/'.$track['cover_path']) : asset('images/default-cover.jpg') }}"
-                        class="w-full h-44 object-cover rounded-xl shadow-lg group-hover:scale-105 transition duration-500">
+                        class="w-full object-cover rounded-xl shadow-lg group-hover:scale-105 transition duration-500">
 
                     <div class="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-4 transition-all duration-300">
                         <div class="bg-green-500 w-10 h-10 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition">
@@ -262,7 +335,7 @@ $currentId = $data['currentTrackId'] ?? null;
 
 {{-- MINI PLAYER --}}
 <div
-    class="fixed bottom-16 md:bottom-0 left-0 right-0 bg-black border-t border-gray-800 h-24 px-6 flex items-center z-50"
+    class="fixed bottom-16 md:bottom-0 left-0 right-0 backdrop-blur bg-black/40  border-t border-gray-800 h-24 px-6 flex items-center z-50"
     x-data="playerComponentFromJson('#sp_tracks_json', {{ $currentId ?? 'null' }})"
     x-init="init()"
 >
@@ -317,12 +390,83 @@ $currentId = $data['currentTrackId'] ?? null;
             </div>
         </div>
 
-        <div class="w-1/3 flex justify-end">
-            <input type="range" min="0" max="1" step="0.01"
-                x-model.number="volume"
-                @input="updateVolume()"
-                class="w-32">
-        </div>
+        <div class="w-1/3 flex justify-end items-center gap-3 group">
+
+    <div class="w-1/3 flex justify-end items-center gap-3 group"
+     x-data="{ previousVolume: volume }">
+
+    <!-- Clickable Volume Icon -->
+    <div 
+        @click="
+            if (volume > 0) {
+                previousVolume = volume;
+                volume = 0;
+            } else {
+                volume = previousVolume || 1;
+            }
+            updateVolume();
+        "
+        class="text-gray-400 hover:text-white cursor-pointer 
+               transition duration-300">
+
+        <!-- Muted -->
+        <template x-if="volume == 0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 9l6 6m0-6l-6 6M11 5l-4 4H4v6h3l4 4V5z" />
+            </svg>
+        </template>
+
+        <!-- Low -->
+        <template x-if="volume > 0 && volume <= 0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5l-4 4H4v6h3l4 4V5z" />
+            </svg>
+        </template>
+
+        <!-- High -->
+        <template x-if="volume > 0.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5l-4 4H4v6h3l4 4V5zM15 9a3 3 0 010 6m2-8a6 6 0 010 10" />
+            </svg>
+        </template>
+    </div>
+
+    <!-- Slider -->
+    <input type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        x-model.number="volume"
+        @input="updateVolume()"
+        class="w-32 h-1.5 appearance-none bg-gray-600 rounded-full 
+               outline-none cursor-pointer
+               transition-all duration-300
+               hover:bg-gray-500
+
+               [&::-webkit-slider-thumb]:appearance-none
+               [&::-webkit-slider-thumb]:w-4
+               [&::-webkit-slider-thumb]:h-4
+               [&::-webkit-slider-thumb]:rounded-full
+               [&::-webkit-slider-thumb]:bg-white
+               [&::-webkit-slider-thumb]:shadow-lg
+               [&::-webkit-slider-thumb]:transition
+               [&::-webkit-slider-thumb]:duration-300
+               [&::-webkit-slider-thumb]:hover:scale-110
+
+               [&::-moz-range-thumb]:w-4
+               [&::-moz-range-thumb]:h-4
+               [&::-moz-range-thumb]:rounded-full
+               [&::-moz-range-thumb]:bg-white
+               [&::-moz-range-thumb]:border-none">
+    </div>
+
+
 
     </div>
 
