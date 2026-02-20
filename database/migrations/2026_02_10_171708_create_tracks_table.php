@@ -12,6 +12,7 @@ class CreateTracksTable extends Migration
             $table->id();
             $table->string('title');
             $table->string('artist')->nullable();
+            $table->string('genre')->nullable();
             $table->string('album')->nullable();
             $table->string('file_path'); // storage path e.g. 'tracks/song.mp3'
             $table->string('cover_path')->nullable(); // storage path e.g. 'covers/cover.jpg'

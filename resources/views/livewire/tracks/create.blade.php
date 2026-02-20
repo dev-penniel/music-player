@@ -19,7 +19,7 @@ class extends Component {
     #[Validate('required|file|mimes:mp3,wav,ogg,m4a|max:10540')] // 10MB Max
     public $audio;
 
-    public $title, $artist;
+    public $title, $artist, $genre;
 
     // Rename method so it doesn't conflict with the property
     public function saveAudio()
@@ -28,6 +28,7 @@ class extends Component {
         $validated = $this->validate([
             'title' => 'required',
             'artist' => 'required',
+            'genre' => 'required',
         ]);
 
         // Handle cover image upload if exists
@@ -39,6 +40,7 @@ class extends Component {
         Track::create([
             'title' => $validated['title'],
             'artist' => $validated['artist'],
+            'genre' => $validated['genre'],
             'file_path' => $audioPath,
             'cover_path' => $coverImagePath,
         ]);
@@ -52,6 +54,12 @@ class extends Component {
 };
 ?>
 
+@php
+$data = get_object_vars($this);
+$tracks = $data['tracksForJs'] ?? [];
+$currentId = $data['currentTrackId'] ?? null;
+@endphp
+
 
 
 <div class="w-full p-20"> {{-- removed wire:ignore --}}
@@ -63,6 +71,9 @@ class extends Component {
 
         <label for="title">Artist Name</label>
         <input type="text" name="artist" wire:model="artist" >
+
+        <label for="genre">Genre</label>
+        <input type="text" name="genre" wire:model="genre" >
 
 
         <label for="audio">Audio File</label>
