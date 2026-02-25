@@ -6,6 +6,7 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Artist;
+use App\Models\Track;
 
 new
 #[Layout('components.layouts.app.frontend')]
@@ -23,27 +24,28 @@ class extends Component {
     public $cover;
 
     public array $featuredArtists = [];
-    public array $allArtists = [];
 
     public function mount(): void
     {
-        // Get logged in user's artist
         $this->artist = Artist::where('user_id', Auth::id())->first();
 
         if (!$this->artist) {
             redirect()->route('artist.create');
         }
+    }
 
-        // Load all artists for featuring
-        // $this->allArtists = Artist::where('id', '!=', $this->artist->id)
-        //     ->get()
-        //     ->toArray();
+    public function getAvailableArtistsProperty()
+    {
+        return Artist::where('id', '!=', $this->artist->id)
+            ->where('is_published', true)
+            ->orderBy('stage_name')
+            ->get();
     }
 
     public function upload(): void
     {
         $this->validate([
-            'title' => 'required|min:2',
+            'title' => 'required|min:2|max:255',
             'audio' => 'required|mimes:mp3,wav|max:20000',
             'cover' => 'nullable|image|max:5000',
         ]);
@@ -62,14 +64,25 @@ class extends Component {
             'plays'        => 0,
         ]);
 
-        // Attach featured artists
-        foreach ($this->featuredArtists as $artistId) {
-            $track->artists()->attach($artistId, [
-                'role' => 'featured'
-            ]);
+        // Attach featured artists safely
+        if (!empty($this->featuredArtists)) {
+            $attachData = collect($this->featuredArtists)
+                ->unique()
+                ->mapWithKeys(fn($id) => [
+                    $id => ['role' => 'featured']
+                ])
+                ->toArray();
+
+            $track->artists()->syncWithoutDetaching($attachData);
         }
 
-        $this->reset(['title','audio','cover','release_date','featuredArtists']);
+        $this->reset([
+            'title',
+            'audio',
+            'cover',
+            'release_date',
+            'featuredArtists'
+        ]);
 
         session()->flash('success', 'Track uploaded successfully 🚀');
     }
@@ -77,10 +90,10 @@ class extends Component {
 };
 ?>
 
-<div class="max-w-2xl mx-auto py-16 text-white">
+<div class="max-w-3xl mx-auto py-16 text-white">
 
     <h1 class="text-3xl font-bold mb-10">
-        {{ $this->artist->stage_name }} Upload Track
+        {{ $this->artist->stage_name }} — Upload Track
     </h1>
 
     @if(session()->has('success'))
@@ -91,43 +104,75 @@ class extends Component {
 
     <form wire:submit.prevent="upload" class="space-y-6">
 
-        <input type="text"
-               wire:model="title"
-               placeholder="Track Title"
-               class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        {{-- Title --}}
+        <div>
+            <label class="text-sm text-gray-400 block mb-2">
+                Track Title
+            </label>
+            <input type="text"
+                   wire:model="title"
+                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500">
+        </div>
 
-        <input type="date"
-               wire:model="release_date"
-               class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        {{-- Release Date --}}
+        <div>
+            <label class="text-sm text-gray-400 block mb-2">
+                Release Date
+            </label>
+            <input type="date"
+                   wire:model="release_date"
+                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        </div>
 
-        <input type="file"
-               wire:model="audio"
-               class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        {{-- Audio --}}
+        <div>
+            <label class="text-sm text-gray-400 block mb-2">
+                Audio File
+            </label>
+            <input type="file"
+                   wire:model="audio"
+                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        </div>
 
-        <input type="file"
-               wire:model="cover"
-               class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        {{-- Cover --}}
+        <div>
+            <label class="text-sm text-gray-400 block mb-2">
+                Cover Image
+            </label>
+            <input type="file"
+                   wire:model="cover"
+                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        </div>
 
         {{-- Featured Artists --}}
+        @if($this->availableArtists->count())
         <div>
-            <label class="text-sm text-gray-400 mb-2 block">
+            <label class="text-sm text-gray-400 block mb-3">
                 Featured Artists
             </label>
 
-            <select multiple
-                    wire:model="featuredArtists"
-                    class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
-                @foreach($allArtists as $artist)
-                    <option value="{{ $artist['id'] }}">
-                        {{ $artist['stage_name'] }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+            <div class="grid grid-cols-2 gap-3">
+                @foreach($this->availableArtists as $artist)
+                    <label class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 hover:border-green-500 cursor-pointer transition">
+                        <input type="checkbox"
+                               value="{{ $artist->id }}"
+                               wire:model="featuredArtists"
+                               class="accent-green-500">
 
+                        <span class="text-sm">
+                            {{ $artist->stage_name }}
+                        </span>
+                    </label>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        {{-- Publish --}}
         <div class="flex items-center gap-3">
             <input type="checkbox"
-                   wire:model="is_published">
+                   wire:model="is_published"
+                   class="accent-green-500">
             <span class="text-sm text-gray-400">
                 Publish immediately
             </span>
