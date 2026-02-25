@@ -8,6 +8,11 @@ Volt::route('artist-profile', 'artist-profile')->name('artist-profile');
 Volt::route('explore', 'explore')->name('explore');
 Volt::route('podcast', 'podcast')->name('podcast');
 
+Route::middleware(['auth'])->group(function () {
+    Volt::route('artist/upload', 'artist.upload')->name('artist.upload');
+    Volt::route('artist/create', 'artist.create')->name('artist.create');
+});
+
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -31,8 +36,6 @@ Route::middleware(['auth'])->group(function(){
 
     Volt::route('musicplayer', 'musicplayer')->name('musicplayer');
     Volt::route('tracks/create', 'tracks.create')->name('tracks.create');
-
-
 
 });
 
