@@ -429,6 +429,6 @@ function playerComponentFromJson(jsonSelector, currentId) {
     }
 }
 </script>
-
+    @fluxScripts
 </body>
 </html>

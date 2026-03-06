@@ -25,29 +25,33 @@ class extends Component {
 
     public array $featuredArtists = [];
 
-    public function mount(): void
+    // IMPORTANT: do NOT type this as array
+    public $allArtists;
+
+    public function mount()
     {
         $this->artist = Artist::where('user_id', Auth::id())->first();
 
         if (!$this->artist) {
-            redirect()->route('artist.create');
+            return redirect()->route('artist.create');
         }
-    }
 
-    public function getAvailableArtistsProperty()
-    {
-        return Artist::where('id', '!=', $this->artist->id)
-            ->where('is_published', true)
+        // Keep as Collection (NOT toArray)
+        $this->allArtists = Artist::where('id', '!=', $this->artist->id)
             ->orderBy('stage_name')
             ->get();
     }
 
-    public function upload(): void
+    public function uploadTrack()
     {
+
+        
         $this->validate([
             'title' => 'required|min:2|max:255',
-            'audio' => 'required|mimes:mp3,wav|max:20000',
-            'cover' => 'nullable|image|max:5000',
+            'audio' => 'required|mimes:mp3,wav|max:20480',
+            'cover' => 'nullable|image|max:5120',
+            'featuredArtists' => 'array',
+            'featuredArtists.*' => 'exists:artists,id'
         ]);
 
         $audioPath = $this->audio->store('tracks', 'public');
@@ -66,14 +70,13 @@ class extends Component {
 
         // Attach featured artists safely
         if (!empty($this->featuredArtists)) {
-            $attachData = collect($this->featuredArtists)
-                ->unique()
-                ->mapWithKeys(fn($id) => [
-                    $id => ['role' => 'featured']
-                ])
-                ->toArray();
+            $attachData = [];
 
-            $track->artists()->syncWithoutDetaching($attachData);
+            foreach ($this->featuredArtists as $artistId) {
+                $attachData[$artistId] = ['role' => 'featured'];
+            }
+
+            $track->artists()->attach($attachData);
         }
 
         $this->reset([
@@ -86,103 +89,185 @@ class extends Component {
 
         session()->flash('success', 'Track uploaded successfully 🚀');
     }
-
 };
 ?>
 
-<div class="max-w-3xl mx-auto py-16 text-white">
+<form wire:submit.prevent="uploadTrack" enctype="multipart/form-data" class="space-y-8">
 
-    <h1 class="text-3xl font-bold mb-10">
-        {{ $this->artist->stage_name }} — Upload Track
-    </h1>
+{{-- TRACK TITLE --}}
+<div>
+    <label class="text-sm text-gray-400 block mb-2">
+        Track Title
+    </label>
 
-    @if(session()->has('success'))
-        <div class="bg-green-600/20 text-green-400 p-4 rounded-xl mb-6">
-            {{ session('success') }}
-        </div>
-    @endif
+    <input type="text"
+           wire:model="title"
+           placeholder="Enter track title"
+           class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500">
+</div>
 
-    <form wire:submit.prevent="upload" class="space-y-6">
 
-        {{-- Title --}}
-        <div>
-            <label class="text-sm text-gray-400 block mb-2">
-                Track Title
-            </label>
-            <input type="text"
-                   wire:model="title"
-                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500">
-        </div>
+{{-- COVER IMAGE --}}
+<div>
 
-        {{-- Release Date --}}
-        <div>
-            <label class="text-sm text-gray-400 block mb-2">
-                Release Date
-            </label>
-            <input type="date"
-                   wire:model="release_date"
-                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
-        </div>
+    <label class="text-sm text-gray-400 block mb-2">
+        Cover Artwork
+    </label>
 
-        {{-- Audio --}}
-        <div>
-            <label class="text-sm text-gray-400 block mb-2">
-                Audio File
-            </label>
-            <input type="file"
-                   wire:model="audio"
-                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
-        </div>
+    <div class="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center">
 
-        {{-- Cover --}}
-        <div>
-            <label class="text-sm text-gray-400 block mb-2">
-                Cover Image
-            </label>
-            <input type="file"
-                   wire:model="cover"
-                   class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+        <input type="file"
+               wire:model="cover"
+               accept="image/*"
+               class="hidden"
+               id="coverUpload">
+
+        <label for="coverUpload" class="cursor-pointer">
+
+            @if($cover)
+
+                <img src="{{ $cover->temporaryUrl() }}"
+                     class="mx-auto w-48 h-48 object-cover rounded-xl">
+
+            @else
+
+                <div class="text-gray-400">
+                    <div class="text-lg">Upload Cover</div>
+                    <div class="text-sm">PNG / JPG</div>
+                </div>
+
+            @endif
+
+        </label>
+
+        <div wire:loading wire:target="cover" class="text-sm text-gray-400 mt-3">
+            Uploading cover...
         </div>
 
-        {{-- Featured Artists --}}
-        @if($this->availableArtists->count())
-        <div>
-            <label class="text-sm text-gray-400 block mb-3">
-                Featured Artists
-            </label>
-
-            <div class="grid grid-cols-2 gap-3">
-                @foreach($this->availableArtists as $artist)
-                    <label class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 hover:border-green-500 cursor-pointer transition">
-                        <input type="checkbox"
-                               value="{{ $artist->id }}"
-                               wire:model="featuredArtists"
-                               class="accent-green-500">
-
-                        <span class="text-sm">
-                            {{ $artist->stage_name }}
-                        </span>
-                    </label>
-                @endforeach
-            </div>
-        </div>
-        @endif
-
-        {{-- Publish --}}
-        <div class="flex items-center gap-3">
-            <input type="checkbox"
-                   wire:model="is_published"
-                   class="accent-green-500">
-            <span class="text-sm text-gray-400">
-                Publish immediately
-            </span>
-        </div>
-
-        <button type="submit"
-                class="w-full bg-green-500 hover:bg-green-600 transition rounded-xl py-3 font-semibold">
-            Upload Track
-        </button>
-
-    </form>
+    </div>
 
 </div>
+
+
+{{-- AUDIO FILE --}}
+<div>
+
+    <label class="text-sm text-gray-400 block mb-2">
+        Audio File
+    </label>
+
+    <div class="border-2 border-dashed border-gray-700 rounded-xl p-6 text-center">
+
+        <input type="file"
+               wire:model="audio"
+               accept="audio/*"
+               class="hidden"
+               id="audioUpload">
+
+        <label for="audioUpload" class="cursor-pointer">
+
+            <div class="text-gray-400">
+
+                @if(!$audio)
+                    <div class="text-lg">Upload Track</div>
+                    <div class="text-sm">MP3 / WAV</div>
+                @endif
+
+            </div>
+
+        </label>
+
+        <div wire:loading wire:target="audio" class="text-sm text-gray-400 mt-3">
+            Uploading audio...
+        </div>
+
+        {{-- AUDIO PLAYER PREVIEW --}}
+        @if($audio)
+
+            <div class="mt-6">
+                <audio controls class="w-full">
+                    <source src="{{ $audio->temporaryUrl() }}">
+                </audio>
+
+                <div class="text-xs text-gray-400 mt-2">
+                    {{ $audio->getClientOriginalName() }}
+                </div>
+            </div>
+
+        @endif
+
+    </div>
+
+</div>
+
+
+{{-- RELEASE DATE --}}
+<div>
+    <label class="text-sm text-gray-400 block mb-2">
+        Release Date
+    </label>
+
+    <input type="date"
+           wire:model="release_date"
+           class="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3">
+</div>
+
+
+{{-- FEATURED ARTISTS --}}
+@if($allArtists->count())
+
+<div>
+
+<label class="text-sm text-gray-400 block mb-3">
+Featured Artists
+</label>
+
+<div class="grid grid-cols-2 gap-3">
+
+@foreach($allArtists as $featArtist)
+
+<label class="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 hover:border-green-500 cursor-pointer">
+
+<input type="checkbox"
+       value="{{ $featArtist->id }}"
+       wire:model="featuredArtists"
+       class="accent-green-500">
+
+<span class="text-sm">
+{{ $featArtist->stage_name }}
+</span>
+
+</label>
+
+@endforeach
+
+</div>
+
+</div>
+
+@endif
+
+
+{{-- PUBLISH --}}
+<div class="flex items-center gap-3">
+
+<input type="checkbox"
+       wire:model="is_published"
+       class="accent-green-500">
+
+<span class="text-sm text-gray-400">
+Publish Immediately
+</span>
+
+</div>
+
+
+{{-- SUBMIT --}}
+<button type="submit"
+        class="w-full bg-green-500 hover:bg-green-600 transition rounded-xl py-3 font-semibold">
+
+Upload Track
+
+</button>
+
+</form>
